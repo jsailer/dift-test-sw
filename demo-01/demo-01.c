@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <rt/rt_api.h>
 
+#include "../common/policy.h"
 #include "../common/tag_bits.h"
 
 
@@ -44,11 +45,15 @@ int32_t dummy_processing(int32_t n);
 
 int main()
 {
-  volatile int32_t a, b;
-  int32_t add, sub, mul, div, mod;
+  dift_prop_pol_t  propagation_policy;
+  dift_check_pol_t check_policy;
 
-  a = 30;
-  b = 5;
+  // setup DIFT policies
+  propagation_policy  = prop_policy_default;
+  check_policy        = check_policy_default;
+  //check_policy.U      = 0x00000000;
+  change_prop_policy(propagation_policy);
+  change_check_policy(check_policy);
 
   // setup unsecure memory used as input
   unsecure_input[0]  = 0x11;
@@ -132,3 +137,11 @@ int32_t dummy_processing(int32_t n)
   return val;
 }
 
+
+
+// trap handler
+void __rt_illegal_instr(void)
+{
+  printf("Hacker got caught!\r\n");
+  while(1);
+}
