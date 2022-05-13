@@ -21,6 +21,7 @@ void write_tag_bits_mem(uint32_t * addr, uint32_t bytes, uint8_t tag_value)
 {
   uint32_t i;
   uint32_t words;
+  uint32_t data;
 
   // input sanitizing of tag_value (only last 4 bits are used and may be set)
   tag_value &= 0xf;
@@ -33,8 +34,6 @@ void write_tag_bits_mem(uint32_t * addr, uint32_t bytes, uint8_t tag_value)
 
   for(i = 0; i < words; i++)
   {
-    uint32_t data;
-
     // read word
     data = *(addr);
 
@@ -50,7 +49,13 @@ void write_tag_bits_mem(uint32_t * addr, uint32_t bytes, uint8_t tag_value)
     addr++;
   }
 
-  // TODO: handle spilling bytes
+  // handle spilling bytes
+  if(bytes > 0)
+  {
+    __asm__ volatile ( "tagset %[data_reg], %[tag_val_mask_reg], 0x000"
+                     : [data_reg]         "+r" (data)
+                     : [tag_val_mask_reg] "r"  ((tag_value << 4) | ((1 << i)-1)) );
+  }
 
   // TODO: restore saved prop policy
 }

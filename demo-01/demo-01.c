@@ -48,10 +48,15 @@ int main()
   dift_prop_pol_t  propagation_policy;
   dift_check_pol_t check_policy;
 
+  printf("Starting Demo program...\r\n");
+
   // setup DIFT policies
   propagation_policy  = prop_policy_default;
   check_policy        = check_policy_default;
-  //check_policy.U      = 0x00000000;
+  //check_policy.S.store = 0; // no store check
+  //check_policy.S.jalr  = 0; // no jalr check
+  //check_policy.S.exec  = 0; // no exec check
+
   change_prop_policy(propagation_policy);
   change_check_policy(check_policy);
 
@@ -80,6 +85,7 @@ int main()
   set_tag_bits_mem(shellcode, sizeof shellcode);
 
   // call vulnerable function with malicious input operands
+  printf("Calling vulnerable function...\r\n");
   vuln_jalr_numbers(unsecure_input);
 
   // simulate to do some more processing...
@@ -87,7 +93,6 @@ int main()
 
   // finish in an endless loop
   while(1);
-
 
   return 0;
 }
@@ -142,6 +147,20 @@ int32_t dummy_processing(int32_t n)
 // trap handler
 void __rt_illegal_instr(void)
 {
-  printf("Hacker got caught!\r\n");
+  void * mepc;  // Machine Exception PC
+  uint32_t mcause;  // MCAUSE
+
+  // read out MEPC
+  __asm__ volatile ( "csrr %[rd], 0x341"
+                   : [rd] "=r" (mepc) );
+
+  // read out MCAUSE
+  __asm__ volatile ( "csrr %[rd], 0x342"
+                   : [rd] "=r" (mcause) );
+
+  printf("ATTACK DETECTED\r\n");
+  printf("  mepc:   %p\r\n", mepc);
+  printf("  mcause: 0x%x\r\n", mcause);
+
   while(1);
 }

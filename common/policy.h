@@ -67,6 +67,7 @@ extern const dift_check_pol_t check_policy_default;
 
 void change_prop_policy(dift_prop_pol_t prop_pol);
 void change_check_policy(dift_check_pol_t check_pol);
+dift_prop_pol_t read_prop_policy(void);
 
 
 

@@ -53,9 +53,9 @@ const dift_check_pol_t check_policy_default = { .S =
 void change_prop_policy(dift_prop_pol_t prop_pol)
 {
   uint32_t value;
-  
+
   value = prop_pol.U;
-  
+
   // CSR 0x20 is DIFT TPCR
   __asm__ volatile ( "csrw 0x20, %[value_reg]"
                    :
@@ -67,7 +67,7 @@ void change_prop_policy(dift_prop_pol_t prop_pol)
 void change_check_policy(dift_check_pol_t check_pol)
 {
   uint32_t value;
-  
+
   value = check_pol.U;
 
   // CSR 0x21 is DIFT TCCR
@@ -76,3 +76,16 @@ void change_check_policy(dift_check_pol_t check_pol)
                    : [value_reg] "r" (value) );
 }
 
+
+dift_prop_pol_t read_prop_policy(void)
+{
+  uint32_t value;
+  dift_prop_pol_t prop_pol_value;
+
+  __asm__ volatile ( "csrr %[value_reg], 0x20"
+                   : [value_reg] "=r" (value) );
+
+  prop_pol_value.U = value;
+
+  return prop_pol_value;
+}
