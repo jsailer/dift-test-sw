@@ -25,8 +25,9 @@ int __rt_fpga_fc_frequency = 20000000; // e.g. 20000000 for 20MHz
 int __rt_fpga_periph_frequency = 10000000; // e.g. 10000000 for 10MHz
 unsigned int __rt_iodev_uart_baudrate = 115200;
 
-// vulnerable
+// vulnerable buffer
 char    vuln_buffer[8] = "";
+// attack target
 uint8_t authenticated  = 0;
 
 
@@ -54,6 +55,7 @@ int main()
   //check_policy.S.store = 0; // no store check
   //check_policy.S.jalr  = 0; // no jalr check
   //check_policy.S.exec  = 0; // no exec check
+  //check_policy.S.branch  = 0b010; // 01x = OR, (xx0 = single_mode_select -> a)
   change_prop_policy(propagation_policy);
   change_check_policy(check_policy);
 
