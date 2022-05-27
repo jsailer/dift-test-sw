@@ -24,15 +24,18 @@ typedef union
   uint32_t U;
   struct
   {
-    uint32_t floats   : 2;
-    uint32_t mul      : 2;
-    uint32_t csr      : 1;
-    uint32_t comp     : 2;
-    uint32_t shift    : 2;
-    uint32_t alu      : 2;
-    uint32_t load     : 4;
     uint32_t store    : 4;
-    uint32_t reserved : 13;
+    uint32_t load     : 4;
+    uint32_t branch   : 1;
+    uint32_t csr      : 1;
+    uint32_t logic    : 2;
+    uint32_t add      : 2;
+    uint32_t mul      : 2;
+    uint32_t shift    : 4;
+    uint32_t comp     : 2;
+    uint32_t fpu      : 2;
+    uint32_t xpulp    : 2;
+    uint32_t reserved : 6;
   } S;
 } dift_prop_pol_t;
 
@@ -42,11 +45,11 @@ typedef union
   uint32_t U;
   struct
   {
-    uint32_t load     : 1;
-    uint32_t store    : 1;
-    uint32_t branch   : 3;
-    uint32_t jalr     : 1;
     uint32_t exec     : 1;
+    uint32_t store    : 1;
+    uint32_t load     : 1;
+    uint32_t jalr     : 1;
+    uint32_t branch   : 3;
     uint32_t reserved : 25;
   } S;
 } dift_check_pol_t;
@@ -57,6 +60,7 @@ typedef union
 // GLOBAL VARIABLE PROTOTYPES
 //
 extern const dift_prop_pol_t prop_policy_default;
+extern const dift_prop_pol_t prop_policy_strict;
 extern const dift_check_pol_t check_policy_default;
 
 

@@ -51,11 +51,14 @@ int main()
 
   // setup DIFT policies
   propagation_policy  = prop_policy_default;
+  propagation_policy  = prop_policy_strict;
   check_policy        = check_policy_default;
+
   //check_policy.S.store = 0; // no store check
   //check_policy.S.jalr  = 0; // no jalr check
   //check_policy.S.exec  = 0; // no exec check
   //check_policy.S.branch  = 0b010; // 01x = OR, (xx0 = single_mode_select -> a)
+
   change_prop_policy(propagation_policy);
   change_check_policy(check_policy);
 
@@ -84,30 +87,4 @@ int main()
   while(1);
 
   return 0;
-}
-
-
-
-//
-// Trap Handler
-//
-
-void __rt_illegal_instr(void)
-{
-  void * mepc;  // Machine Exception PC
-  uint32_t mcause;  // MCAUSE
-
-  // read out MEPC
-  __asm__ volatile ( "csrr %[rd], 0x341"
-                   : [rd] "=r" (mepc) );
-
-  // read out MCAUSE
-  __asm__ volatile ( "csrr %[rd], 0x342"
-                   : [rd] "=r" (mcause) );
-
-  printf("ATTACK DETECTED\r\n");
-  printf("  mepc:   %p\r\n", mepc);
-  printf("  mcause: 0x%x\r\n", mcause);
-
-  while(1);
 }

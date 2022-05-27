@@ -52,7 +52,10 @@ int main()
 
   // setup DIFT policies
   propagation_policy  = prop_policy_default;
+  propagation_policy  = prop_policy_strict;
   check_policy        = check_policy_default;
+
+  check_policy.S.load  = 0; // no load check
   //check_policy.S.store = 0; // no store check
   //check_policy.S.jalr  = 0; // no jalr check
   //check_policy.S.exec  = 0; // no exec check
@@ -92,6 +95,7 @@ int main()
   dummy_processing(7);
 
   // finish in an endless loop
+  printf("Finished program execution!\r\n");
   while(1);
 
   return 0;
@@ -111,14 +115,11 @@ void vuln_jalr_numbers(int32_t* numbers)
   int32_t  buf[5];  // can add max 5 numbers
 
   // read only positive numbers into buffer array (with size of only 5)
-  while( *numbers != 0 )
+  while( numbers[i] != 0 )
   {
-    buf[i] = *numbers; // vulnerability: no boundary check
+    buf[i] = numbers[i]; // vulnerability: no boundary check
     i++;
-    numbers++;
   }
-
-  // do some processing on the buf array
 
   // call any function (just so that vuln_jalr_numbers has to save the return address on the stack)
   (void) dummy_processing(5);
@@ -143,24 +144,3 @@ int32_t dummy_processing(int32_t n)
 }
 
 
-
-// trap handler
-void __rt_illegal_instr(void)
-{
-  void * mepc;  // Machine Exception PC
-  uint32_t mcause;  // MCAUSE
-
-  // read out MEPC
-  __asm__ volatile ( "csrr %[rd], 0x341"
-                   : [rd] "=r" (mepc) );
-
-  // read out MCAUSE
-  __asm__ volatile ( "csrr %[rd], 0x342"
-                   : [rd] "=r" (mcause) );
-
-  printf("ATTACK DETECTED\r\n");
-  printf("  mepc:   %p\r\n", mepc);
-  printf("  mcause: 0x%x\r\n", mcause);
-
-  while(1);
-}

@@ -12,6 +12,8 @@
 
 #include <rt/rt_api.h>
 
+//#define SIM
+
 
 
 //
@@ -22,6 +24,10 @@ void write_tag_bits_mem(uint32_t * addr, uint32_t bytes, unsigned char tag_value
 void set_tag_bits_mem(uint32_t * addr, uint32_t bytes);
 void clear_tag_bits_mem(uint32_t * addr, uint32_t bytes);
 uint8_t read_tag_bits_mem(uint32_t * addr);
+
+void print_mem(void * start_addr, uint32_t num_words);
+void print_stack_frame(void * frame_ptr_s0, void * stack_ptr_sp);
+
 
 
 
